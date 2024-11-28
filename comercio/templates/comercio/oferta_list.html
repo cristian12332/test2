@@ -1,0 +1,29 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Lista de Ofertas</h1>
+    <a href="{% url 'oferta_create' %}">Crear Nueva Oferta</a>
+    <ul>
+        {% for oferta in ofertas %}
+            <li>
+                {{ oferta.nombre }} - ${{ oferta.precio_oferta }} 
+                (Platos: {{ oferta.platos.all|join:", " }})
+                (Días Especiales: {{ oferta.dias_especiales.all|join:", " }})
+                <a href="{% url 'oferta_update' oferta.pk %}">Editar</a>
+                <form action="{% url 'oferta_delete' oferta.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Eliminar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'dia_especial_list' %}">lista de dias especiales</a>
+</body>
+</html>

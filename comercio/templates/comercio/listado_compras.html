@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Compras</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #FFEFBA, #FFFFFF);
+            background-image: url('https://www.transparenttextures.com/patterns/paper.png');
+            display: flex;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            animation: backgroundChange 6s ease infinite;
+        }
+
+        @keyframes backgroundChange {
+            0% {
+                background-color: #ff7e5f;
+            }
+            33% {
+                background-color: #feb47b;
+            }
+            66% {
+                background-color: #86e3ce;
+            }
+            100% {
+                background-color: #ff7e5f;
+            }
+        }
+
+        .sidebar {
+            min-width: 250px;
+            background-color: #6A1B9A;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            position: sticky;
+            transition: transform 0.3s ease;
+        }
+        .toggle-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #6A1B9A;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+        .sidebar h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        .sidebar .nav-link {
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        h2 {
+            color: #343a40;
+            font-weight: 600;
+        }
+        .text-center {
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                width: 200px;
+                transform: translateX(-100%);
+            }
+            .sidebar.visible {
+                transform: translateX(0);
+            }
+            .toggle-button {
+                display: block;
+            }
+            main {
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <button class="toggle-button" onclick="toggleSidebar()">☰</button>
+    
+    <nav id="sidebarMenu" class="sidebar">
+        <h2 class="h4">Panel Admin</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'iniciada' %}">
+                    <i class="bi bi-house-door me-2"></i>
+                    Inicio
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/cerrar">
+                    <i class="bi bi-box-arrow-right me-2"></i>
+                    Cerrar sesión
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="flex-grow-1 p-4">
+        <h2>Listado de Ventas</h2>
+        <form method="GET" class="mb-3">
+            <div class="row">
+                <div class="col">
+                    <input type="date" name="fecha_inicio" class="form-control" placeholder="Fecha Inicio">
+                </div>
+                <div class="col">
+                    <input type="date" name="fecha_fin" class="form-control" placeholder="Fecha Fin">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+            </div>
+        </form>
+        <a href="{% url 'descargar_excel' %}" class="btn btn-primary mb-3">Descargar en Excel</a>
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Factura ID</th>
+                        <th>Fecha</th>
+                        <th>Dirección</th>
+                        <th>Nombre</th>
+                        <th>Método de Pago</th>
+                        <th>Detalles del Pedido</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for factura in facturas %}
+                    <tr>
+                        <td>{{ factura.id }}</td>
+                        <td>{{ factura.fecha }}</td>
+                        <td>{{ factura.direccion }}</td>
+                        <td>{{ factura.nombre }}</td>
+                        <td>{{ factura.metodo_pago }}</td>
+                        <td>
+                            <ul class="list-unstyled mb-0">
+                                {% for detalle in factura.detalles.all %}
+                                <li>{{ detalle.cantidad }} x {{ detalle.plato.nombre }} - ${{ detalle.plato.precio }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>${{ factura.total }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No hay compras registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarMenu');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('visible'); // Agregamos la clase visible
+        }
+    </script>
+</body>
+</html>

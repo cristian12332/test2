@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platos Congelados</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        nav {
+            background-color: #343a40; /* Color oscuro */
+            padding: 10px 20px;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        nav ul li {
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: #ffffff; /* Blanco para el texto */
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        nav .logo {
+            font-size: 1.5em;
+            color: #f8d210; /* Color claro para el logo */
+            font-weight: bold;
+            margin-right: auto; /* Empuja el resto de los elementos hacia la derecha */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="logo">Platos Congelados</span>
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="/cerrar">Cerrar sesión</a></li>
+            {% else %}
+                <li><a href="/registro">Registrarse</a></li>
+                <li><a href="/iniciar">Iniciar sesión</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% block conten %}
+    {% endblock %}
+
+    {% if user.is_staff %}
+    <div class="container mt-5">
+        <h1>Bienvenido a la gestión de platos</h1>
+        <a href="{% url 'plato_list' %}" class="btn">Agregar, editar o eliminar platos</a>
+    </div>
+    <div class="container mt-5">
+        <a href="{% url 'visualizar_encuestas' %}" class="btn">Ver encuestas realizadas</a>
+    </div>
+    {% endif %}
+
+    <div class="container mt-5">
+        <h1>Ve nuestros platos disponibles</h1>
+        <a href="{% url 'pagina_venta' %}" class="btn">Ir a la lista de platos</a>
+    </div>    
+</body>
+</html>

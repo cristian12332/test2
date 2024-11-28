@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesar Compra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function toggleTarjetaFields() {
+            const metodoPago = document.getElementById('metodo_pago');
+            const tarjetaFields = document.getElementById('tarjeta-fields');
+            tarjetaFields.style.display = metodoPago.value === 'tarjeta' ? 'block' : 'none';
+        }
+
+        function validarFormulario(event) {
+            const metodoPago = document.getElementById('metodo_pago').value;
+            const numeroTarjeta = document.getElementById('numero_tarjeta').value;
+            const fechaVencimiento = document.getElementById('fecha_vencimiento').value;
+            const cvv = document.getElementById('cvv').value;
+
+            if (metodoPago === 'tarjeta' && (!numeroTarjeta || !fechaVencimiento || !cvv)) {
+                event.preventDefault();
+                alert("Por favor, complete todos los campos de la tarjeta.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(270deg, #ff7f50, #6f42c1, #ff6347);
+            background-size: 600% 600%;
+            animation: gradient 15s ease infinite;
+            z-index: -1; /* Mantener el fondo detrás del contenido */
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .navbar {
+            background-color: #6f42c1;
+        }
+        .btn-custom-orange {
+            background-color: #ff7f50;
+            border-color: #ff7f50;
+        }
+        .btn-custom-orange:hover {
+            background-color: #ff6347;
+            border-color: #ff6347;
+        }
+        .card {
+            border-radius: 1rem;
+            background-color: white; /* Fondo blanco para el card */
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .text-success {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div> <!-- Capa de fondo animado -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'images/logo.png' %}" alt="postres dulce amanecer" class="img-fluid" width="200" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">                        
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Inicio</a>
+                    </li>                                
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/encuesta">Encuesta</a>
+                    </li>  
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cerrar">Cerrar sesión</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href ="/registro">Registrarse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/iniciar">Iniciar sesión</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Procesar Compra</h2>
+                        <p class="text-center mb-4">Total a pagar: ${{ total_carrito }}</p>
+                        <form method="POST" action="{% url 'procesar_compra' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="metodo_pago" class="form-label">Método de Pago</label>
+                                <select class="form-select" id="metodo_pago" name="metodo_pago" onchange="toggleTarjetaFields()" required>
+                                    <option value="">Seleccione un método</option>
+                                    <option value="tarjeta">Tarjeta de Crédito</option> 
+                                </select>
+                            </div>
+                            <div id="tarjeta-fields" style="display:none;">
+                                <div class="mb-3">
+                                    <label for="numero_tarjeta" class="form-label">Número de Tarjeta</label>
+                                    <input type="text" class="form-control" id="numero_tarjeta" name="numero_tarjeta" maxlength="16" required>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label for="fecha_vencimiento" class="form-label">Fecha de Vencimiento (YYYY-MM-DD)</label>
+                                        <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" required>
+                                    </div>
+                                    <div class="col-auto">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" name="cvv" maxlength="3" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success" onclick="return validarFormulario(event);">Confirmar Pago</button>
+                        </form>                      
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

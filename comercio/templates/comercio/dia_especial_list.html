@@ -1,0 +1,22 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Días Especiales</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">  <!-- Asegúrate de tener un archivo CSS -->
+</head>
+<body>
+    <h1>Lista de Días Especiales</h1>
+    <a href="{% url 'dia_especial_create' %}">Crear Nuevo Día Especial</a>
+    <ul>
+        {% for dia in dias_especiales %}
+            <li>
+                {{ dia.nombre }} - {{ dia.fecha }}
+                <a href="{% url 'dia_especial_delete' dia.pk %}">Eliminar</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

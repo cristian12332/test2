@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas del Día</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>    
+    <style>
+        body {
+            background-color: rgb(192, 176, 156);
+            background-image: url('https://www.transparenttextures.com/patterns/white-linen.png'); /* Fondo sutil */
+            font-family: 'Arial', sans-serif;
+        }
+        .navbar {
+            background-color: #343a40; /* Fondo oscuro para el menú */
+        }
+        .navbar-brand img {
+            filter: brightness(0) invert(1); /* Logo blanco */
+        }
+        .btn-custom-orange:hover {
+            background-color: orange;
+            border-color: orange;
+        }
+        .table-sm td, .table-sm th {
+            padding: 0.3rem;
+        }
+        .product-card {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+        .encuesta-form {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: rgb(192, 176, 156);
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'images/logo.png' %}" alt="Logo Dulce Amanecer" class="img-fluid" width="200" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">                        
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Inicio</a>
+                    </li>                                 
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/encuesta">Encuesta</a>
+                    </li>            
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cerrar">Cerrar sesión</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registro">Registrarse</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/iniciar">Iniciar sesión</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Ofertas del Día</h2>
+        {% if ofertas_hoy %}
+            <ul class="list-group">
+                {% for oferta in ofertas_hoy %}
+                    <li class="list-group-item">
+                        <strong>{{ oferta.nombre }}</strong> - Precio: ${{ oferta.precio_oferta }}<br>
+                        Platos incluidos:
+                        <ul class="list-group">
+                            {% for plato in oferta.platos.all %}
+                                <li class="list-group-item">{{ plato.nombre }}</li>
+                            {% endfor %}
+                        </ul>
+                        <form action="{% url 'agregar_oferta_al_carrito' oferta.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary mt-3">Agregar al Carrito</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center">No hay ofertas disponibles hoy.</p>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-4">
+        <div class="container">
+            <p>&copy; 2024 Dulce Amanecer. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

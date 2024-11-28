@@ -1,0 +1,60 @@
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Tu Carrito de Compras</h2>
+    <div class="table-responsive">
+        <table class="table table-sm table-borderless mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Plato</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrito %}
+                <tr>
+                    <td>{{ item.plato.nombre }}</td>
+                    <td>${{ item.precio }}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td class="text-end">${{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
+        <strong>Total</strong>
+        <strong>${{ total_carrito }}</strong>
+    </div>
+
+    <div class="mt-4">
+        {% if total_carrito > 0 %}
+        <a class="btn btn-custom-orange text-white w-100 mb-2" href="{% url 'procesar_compra' %}">Proceder al pago</a>
+        <a class="btn btn-outline-secondary w-100" href="{% url 'limpiar_carrito' %}">Limpiar carrito</a>        
+        {% else %}
+        <button class="btn btn-custom-orange text-white w-100 mb-2" disabled>Proceder al pago</button>        
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .btn-custom-orange {
+        background-color: #FF8C00; /* Cambia el color según tu preferencia */
+        border: none;
+    }
+    .btn-custom-orange:hover {
+        background-color: #FF7F00; /* Color al pasar el mouse */
+    }
+    .table th, .table td {
+        vertical-align: middle; /* Centrar verticalmente */
+    }
+    .border-top {
+        border-top: 2px solid #dee2e6; /* Línea superior para separar el total */
+    }
+    @media (max-width: 576px) {
+        .table-responsive {
+            overflow-x: auto; /* Permitir desplazamiento horizontal en pantallas pequeñas */
+        }
+    }
+</style>

@@ -1,0 +1,24 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Día Especial</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Crear Día Especial</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" required>
+        
+        <label for="fecha">Fecha:</label>
+        <input type="date" name="fecha" required>
+        
+        <button type="submit">Guardar</button>
+    </form>
+    <a href="{% url 'dia_especial_list' %}">Cancelar</a>
+</body>
+</html>
